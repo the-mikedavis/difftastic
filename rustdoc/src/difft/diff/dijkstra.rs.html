@@ -592,6 +592,50 @@
 <span id="592">592</span>
 <span id="593">593</span>
 <span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
+<span id="603">603</span>
+<span id="604">604</span>
+<span id="605">605</span>
+<span id="606">606</span>
+<span id="607">607</span>
+<span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
+<span id="629">629</span>
+<span id="630">630</span>
+<span id="631">631</span>
+<span id="632">632</span>
+<span id="633">633</span>
+<span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Implements Dijkstra&#39;s algorithm for shortest path, to find an</span>
 <span class="doccomment">//! optimal and readable diff between two ASTs.</span>
 
@@ -607,16 +651,17 @@
 <span class="kw">use</span> <span class="ident">radix_heap::RadixHeapMap</span>;
 <span class="kw">use</span> <span class="ident">rustc_hash::FxHashMap</span>;
 
-<span class="kw">type</span> <span class="ident">PredecessorInfo</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="ident">u64</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">Edge</span>);
+<span class="kw">type</span> <span class="ident">PredecessorInfo</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span>, <span class="lifetime">&#39;b</span><span class="op">&gt;</span> <span class="op">=</span> (<span class="ident">u64</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;b</span> <span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>);
 
-<span class="kw">fn</span> <span class="ident">shortest_path</span>(<span class="ident">start</span>: <span class="ident">Vertex</span>, <span class="ident">size_hint</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Edge</span>, <span class="ident">Vertex</span>)<span class="op">&gt;</span> {
+<span class="doccomment">/// Return the shortest route from `start` to the end vertex.</span>
+<span class="kw">fn</span> <span class="ident">shortest_vertex_path</span>(<span class="ident">start</span>: <span class="ident">Vertex</span>, <span class="ident">size_hint</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vertex</span><span class="op">&gt;</span> {
     <span class="comment">// We want to visit nodes with the shortest distance first, but</span>
     <span class="comment">// RadixHeapMap is a max-heap. Ensure nodes are wrapped with</span>
     <span class="comment">// Reverse to flip comparisons.</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">heap</span>: <span class="ident">RadixHeapMap</span><span class="op">&lt;</span><span class="ident">Reverse</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span>, <span class="kw-2">&amp;</span><span class="ident">Vertex</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">RadixHeapMap::new</span>();
 
     <span class="kw">let</span> <span class="ident">vertex_arena</span> <span class="op">=</span> <span class="ident">Bump::new</span>();
-    <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">Reverse</span>(<span class="number">0</span>), <span class="ident">vertex_arena</span>.<span class="ident">alloc</span>(<span class="ident">start</span>));
+    <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">Reverse</span>(<span class="number">0</span>), <span class="ident">vertex_arena</span>.<span class="ident">alloc</span>(<span class="ident">start</span>.<span class="ident">clone</span>()));
 
     <span class="comment">// TODO: this grows very big. Consider using IDA* to reduce memory</span>
     <span class="comment">// usage.</span>
@@ -638,12 +683,12 @@
                     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">edge</span>, <span class="ident">next</span>)) <span class="op">=</span> <span class="ident">neighbour</span>.<span class="ident">take</span>() {
                         <span class="kw">let</span> <span class="ident">distance_to_next</span> <span class="op">=</span> <span class="ident">distance</span> <span class="op">+</span> <span class="ident">edge</span>.<span class="ident">cost</span>();
                         <span class="kw">let</span> <span class="ident">found_shorter_route</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">predecessors</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">next</span>) {
-                            <span class="prelude-val">Some</span>((<span class="ident">prev_shortest</span>, <span class="kw">_</span>, <span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">distance_to_next</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">prev_shortest</span>,
+                            <span class="prelude-val">Some</span>((<span class="ident">prev_shortest</span>, <span class="kw">_</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">distance_to_next</span> <span class="op">&lt;</span> <span class="kw-2">*</span><span class="ident">prev_shortest</span>,
                             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="bool-val">true</span>,
                         };
 
                         <span class="kw">if</span> <span class="ident">found_shorter_route</span> {
-                            <span class="ident">predecessors</span>.<span class="ident">insert</span>(<span class="ident">next</span>, (<span class="ident">distance_to_next</span>, <span class="ident">current</span>, <span class="ident">edge</span>));
+                            <span class="ident">predecessors</span>.<span class="ident">insert</span>(<span class="ident">next</span>, (<span class="ident">distance_to_next</span>, <span class="ident">current</span>));
 
                             <span class="ident">heap</span>.<span class="ident">push</span>(<span class="ident">Reverse</span>(<span class="ident">distance_to_next</span>), <span class="ident">next</span>);
                         }
@@ -663,18 +708,61 @@
     );
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">current</span> <span class="op">=</span> <span class="ident">end</span>;
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">route</span>: <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Edge</span>, <span class="ident">Vertex</span>)<span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">vertex_route</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Vertex</span><span class="op">&gt;</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">end</span>.<span class="ident">clone</span>()];
+    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">node</span>)) <span class="op">=</span> <span class="ident">predecessors</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">current</span>) {
+        <span class="ident">vertex_route</span>.<span class="ident">push</span>(<span class="ident">node</span>.<span class="ident">clone</span>());
+        <span class="ident">current</span> <span class="op">=</span> <span class="ident">node</span>;
+    }
+
+    <span class="ident">vertex_route</span>.<span class="ident">reverse</span>();
+    <span class="ident">vertex_route</span>
+}
+
+<span class="kw">fn</span> <span class="ident">shortest_path_with_edges</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">route</span>: <span class="kw-2">&amp;</span>[<span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Edge</span>, <span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>)<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">prev</span> <span class="op">=</span> <span class="ident">route</span>.<span class="ident">first</span>().<span class="ident">expect</span>(<span class="string">&quot;Expected non-empty route&quot;</span>);
+
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">cost</span> <span class="op">=</span> <span class="number">0</span>;
-    <span class="kw">while</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="kw">_</span>, <span class="ident">node</span>, <span class="ident">edge</span>)) <span class="op">=</span> <span class="ident">predecessors</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">current</span>) {
-        <span class="ident">route</span>.<span class="ident">push</span>((<span class="ident">edge</span>, <span class="ident">node</span>.<span class="ident">clone</span>()));
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">res</span> <span class="op">=</span> <span class="macro">vec!</span>[];
+    <span class="kw">for</span> <span class="ident">vertex</span> <span class="kw">in</span> <span class="ident">route</span>.<span class="ident">iter</span>().<span class="ident">skip</span>(<span class="number">1</span>) {
+        <span class="kw">let</span> <span class="ident">edge</span> <span class="op">=</span> <span class="ident">edge_between</span>(<span class="ident">prev</span>, <span class="ident">vertex</span>);
+        <span class="ident">res</span>.<span class="ident">push</span>((<span class="ident">edge</span>, <span class="ident">prev</span>.<span class="ident">clone</span>()));
         <span class="ident">cost</span> <span class="op">+</span><span class="op">=</span> <span class="ident">edge</span>.<span class="ident">cost</span>();
 
-        <span class="ident">current</span> <span class="op">=</span> <span class="ident">node</span>;
+        <span class="ident">prev</span> <span class="op">=</span> <span class="ident">vertex</span>;
     }
     <span class="macro">debug!</span>(<span class="string">&quot;Found a path of {} with cost {}.&quot;</span>, <span class="ident">route</span>.<span class="ident">len</span>(), <span class="ident">cost</span>);
 
-    <span class="ident">route</span>.<span class="ident">reverse</span>();
-    <span class="ident">route</span>
+    <span class="ident">res</span>
+}
+
+<span class="doccomment">/// Return the shortest route from the `start` to the end vertex.</span>
+<span class="doccomment">///</span>
+<span class="doccomment">/// The vec returned does not return the very last vertex. This is</span>
+<span class="doccomment">/// necessary because a route of N vertices only has N-1 edges.</span>
+<span class="kw">fn</span> <span class="ident">shortest_path</span>(<span class="ident">start</span>: <span class="ident">Vertex</span>, <span class="ident">size_hint</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Vec</span><span class="op">&lt;</span>(<span class="ident">Edge</span>, <span class="ident">Vertex</span>)<span class="op">&gt;</span> {
+    <span class="kw">let</span> <span class="ident">vertex_path</span> <span class="op">=</span> <span class="ident">shortest_vertex_path</span>(<span class="ident">start</span>, <span class="ident">size_hint</span>);
+    <span class="ident">shortest_path_with_edges</span>(<span class="kw-2">&amp;</span><span class="ident">vertex_path</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">edge_between</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="ident">before</span>: <span class="kw-2">&amp;</span><span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">after</span>: <span class="kw-2">&amp;</span><span class="ident">Vertex</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Edge</span> {
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">neighbour_buf</span> <span class="op">=</span> [
+        <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>, <span class="prelude-val">None</span>,
+    ];
+
+    <span class="kw">let</span> <span class="ident">vertex_arena</span> <span class="op">=</span> <span class="ident">Bump::new</span>();
+    <span class="ident">neighbours</span>(<span class="ident">before</span>, <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">neighbour_buf</span>, <span class="kw-2">&amp;</span><span class="ident">vertex_arena</span>);
+    <span class="kw">for</span> <span class="ident">neighbour</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">neighbour_buf</span> {
+        <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>((<span class="ident">edge</span>, <span class="ident">next</span>)) <span class="op">=</span> <span class="ident">neighbour</span>.<span class="ident">take</span>() {
+            <span class="kw">if</span> <span class="ident">next</span> <span class="op">=</span><span class="op">=</span> <span class="ident">after</span> {
+                <span class="kw">return</span> <span class="ident">edge</span>;
+            }
+        }
+    }
+
+    <span class="macro">panic!</span>(
+        <span class="string">&quot;Expected a route between the two vertices {:#?} and {:#?}&quot;</span>,
+        <span class="ident">before</span>, <span class="ident">after</span>
+    );
 }
 
 <span class="doccomment">/// What is the total number of AST nodes?</span>
