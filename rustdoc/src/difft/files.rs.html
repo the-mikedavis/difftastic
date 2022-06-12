@@ -175,6 +175,13 @@
 <span id="175">175</span>
 <span id="176">176</span>
 <span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
 </pre><pre class="rust"><code><span class="doccomment">//! File reading utilities.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::{
@@ -246,6 +253,13 @@
 
 <span class="doccomment">/// Do these bytes look like a binary (non-textual) format?</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_probably_binary</span>(<span class="ident">bytes</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+    <span class="comment">// Only consider the first 1,000 bytes, as tree_magic_mini</span>
+    <span class="comment">// considers the entire file, which is very slow on large files.</span>
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="ident">bytes</span>;
+    <span class="kw">if</span> <span class="ident">bytes</span>.<span class="ident">len</span>() <span class="op">&gt;</span> <span class="number">1000</span> {
+        <span class="ident">bytes</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident">bytes</span>[..<span class="number">1000</span>];
+    }
+
     <span class="kw">let</span> <span class="ident">mime</span> <span class="op">=</span> <span class="ident">tree_magic_mini::from_u8</span>(<span class="ident">bytes</span>);
     <span class="kw">match</span> <span class="ident">mime</span> {
         <span class="comment">// Treat pdf as binary.</span>
