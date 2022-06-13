@@ -55,6 +55,7 @@ extern "C" {
     fn tree_sitter_elixir() -> ts::Language;
     fn tree_sitter_elm() -> ts::Language;
     fn tree_sitter_elvish() -> ts::Language;
+    fn tree_sitter_erlang() -> ts::Language;
     fn tree_sitter_gleam() -> ts::Language;
     fn tree_sitter_go() -> ts::Language;
     fn tree_sitter_haskell() -> ts::Language;
@@ -274,6 +275,22 @@ pub fn from_language(language: guess::Language) -> TreeSitterConfig {
                 highlight_query: ts::Query::new(
                     language,
                     include_str!("../../vendor/highlights/elvish.scm"),
+                )
+                .unwrap(),
+            }
+        }
+        Erlang => {
+            let language = unsafe { tree_sitter_erlang() };
+            TreeSitterConfig {
+                name: "Erlang",
+                language,
+                atom_nodes: vec!["string"].into_iter().collect(),
+                delimiter_tokens: vec![("(", ")"), ("{", "}"), ("[", "]"), ("of", "end")]
+                    .into_iter()
+                    .collect(),
+                highlight_query: ts::Query::new(
+                    language,
+                    include_str!("../../vendor/highlights/erlang.scm"),
                 )
                 .unwrap(),
             }
