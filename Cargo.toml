@@ -19,6 +19,7 @@ include = [
         "/vendor/*-src/**/*.cc",
         "/README.md",
 ]
+metadata.nix = { build = true, app = true }
 
 [dependencies]
 regex = "1.5.4"
